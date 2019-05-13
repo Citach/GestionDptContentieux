@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,9 +20,18 @@ public class Utilisateur implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long idUtilisateur;
+	@Column(unique = true)
+	private String username;
+	private String password;
 	private String email;
 	private String nom;
 	private String prenom;
+	private boolean enabled = true;
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "profil", joinColumns = {
+			@JoinColumn(name = "id_utilisateur", referencedColumnName = "idUtilisateur") }, inverseJoinColumns = {
+					@JoinColumn(name = "id_role", table = "role", referencedColumnName = "idRole") })
+	private Set<Role> roles = new HashSet<Role>();
 	@ManyToMany()
 	@JoinTable(name="uti_tache", joinColumns=@JoinColumn(name="idUtilisateur"), inverseJoinColumns=@JoinColumn(name="idTache")) 
 	private Set<Tache> taches=new HashSet<Tache>();
